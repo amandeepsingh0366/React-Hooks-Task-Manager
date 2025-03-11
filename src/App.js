@@ -1,23 +1,29 @@
-import logo from './logo.svg';
+import React, { useState, useEffect, useReducer } from 'react';
+import { taskReducer } from './taskReducer';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
 import './App.css';
 
 function App() {
+  // Initializing tasks as an empty array
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+
+  useEffect(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    if (savedTasks) {
+      dispatch({ type: "LOAD", payload: JSON.parse(savedTasks) });
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Task Manager</h1>
+      <TaskForm dispatch={dispatch} />
+      <TaskList tasks={tasks} dispatch={dispatch} />
     </div>
   );
 }
